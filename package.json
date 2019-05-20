@@ -1,0 +1,23 @@
+{
+  "name": "dishi-dlaboko",
+  "version": "1.0.0",
+  "description": "Landscape generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dishi",
+    "dlaboko",
+    "landscape",
+    "generator",
+    "canvas",
+    "html5",
+    "javascript",
+    "twitter",
+    "twitterbot",
+    "bot"
+  ],
+  "author": "Daniel Ilievski",
+  "license": "ISC"
+}
