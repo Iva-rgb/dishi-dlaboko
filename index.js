@@ -81,7 +81,7 @@ Landscape.prototype.draw = function () {
 
     // Real life time in hours 
     var today = new Date().getHours();
-    
+
     // Calculate canvas background depending on the hour of the day 
     if (today >= 18 || today < 6) {
         // Night
@@ -119,6 +119,7 @@ Landscape.prototype.draw = function () {
         ctx.arc(canvas.width / 1.38, canvas.height / 2.5, 12, Math.PI, 0);
         ctx.strokeStyle = 'white';
         ctx.stroke();
+        
         // Smaller bird
         ctx.beginPath();
         ctx.arc(canvas.width / 1.58, canvas.height / 3.3, 9, Math.PI, 0);
