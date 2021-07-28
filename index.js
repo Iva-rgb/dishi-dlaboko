@@ -73,15 +73,62 @@ Landscape.prototype.generateWater = function (color, height) {
 }
 
 Landscape.prototype.draw = function () {
-
+    // Sun coordinates 
+    var sunX = canvas.width / 6;
+    var sunY = canvas.height / 8;
+    var sunRadius = 0.2 * Math.pow(sunX * sunX + sunY * sunY, 0.5);
     let gradient = ctx.createLinearGradient(0, canvas.height / 4, 0, canvas.height);
-            gradient.addColorStop(0, '#32b3d1');
-            gradient.addColorStop(.5, 'rgb(249, 253, 255)');
-            gradient.addColorStop(1, '#fcc900');
-            ctx.fillStyle = gradient;
+
+    // Real life time in hours 
+    var today = new Date().getHours();
+    
+    // Calculate canvas background depending on the hour of the day 
+    if (today >= 18 || today < 6) {
+        // Night
+        gradient.addColorStop(0, '#02060e');
+        gradient.addColorStop(.25, '#0e1724');
+        gradient.addColorStop(.5, '#11233a');
+        gradient.addColorStop(.75, '#132f51');
+        gradient.addColorStop(1, '#143c6a');
+    } else if ((today >= 6 && today <= 9) || (today > 15 && today < 18)){
+        // Rising/setting
+        sunX = canvas.width / 6;
+        sunY = canvas.height / 2;
+        sunRadius = 0.14 * Math.pow(sunX * sunX + sunY * sunY, 0.5);
+        gradient.addColorStop(0, '#b44140');
+        gradient.addColorStop(.25, '#c45a39');
+        gradient.addColorStop(.5, '#cf7532');
+        gradient.addColorStop(.75, '#d3912e');
+        gradient.addColorStop(1, '#d2ae32');
+    } else {
+        // Peak sunny period
+        gradient.addColorStop(0, '#32b3d1');
+        gradient.addColorStop(.5, 'rgb(249, 253, 255)');
+        gradient.addColorStop(1, '#fcc900');
+    }
+    
+    ctx.fillStyle = gradient;
     ctx.rect(0, 0, canvas.width, canvas.height);
     ctx.fill();
+    
+    // Draw birds
+    if (today > 9 && today <= 15) {
+        // Bigger bird
+        ctx.beginPath();
+        ctx.arc(canvas.width / 1.5, canvas.height / 2.5, 12, Math.PI, 0);
+        ctx.arc(canvas.width / 1.38, canvas.height / 2.5, 12, Math.PI, 0);
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        // Smaller bird
+        ctx.beginPath();
+        ctx.arc(canvas.width / 1.58, canvas.height / 3.3, 9, Math.PI, 0);
+        ctx.arc(canvas.width / 1.48, canvas.height / 3.3, 9, Math.PI, 0);
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+    }    
 
+    generateSun(sunX, sunY, sunRadius);
+    
     this
         .hills
         .map(hill => {
@@ -112,27 +159,6 @@ Landscape.prototype.draw = function () {
             ctx.lineTo(0, invertY(0));
             ctx.lineTo(hill.startPoint.x, hill.startPoint.y);
             ctx.fill();
-
-            // for (let i = 0; i < hill.steps.length; i++) {
-            //     let step = hill.steps[i];
-            //     ctx.rect(step.x, 50, 5, 5);
-            //     ctx.fill();
-            // }
-
-            // ctx.beginPath();
-            // if (hill.steps[0]) {
-            //     let tempX = hill.steps[0].x - 20;
-            //     let tempY = hill.steps[0].y + 15;
-            //     ctx.moveTo(tempX, tempY);
-            //     ctx.lineTo(tempX - 10, tempY - 10);
-            //     ctx.lineTo(tempX + 10, tempY);
-            //     ctx.lineTo(tempX + 10, tempY + 5);
-            //     ctx.lineTo(tempX, tempY + 30);
-            //     ctx.lineTo(tempX, tempY);
-            // }
-
-            // ctx.fill();
-
         })
 }
 
@@ -149,6 +175,35 @@ random = (min, max) => {
 invertY = (number) => {
     return canvas.height - number;
 }
+
+generateSun = (x, y, radius) => {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  var rnd = 0.08 * Math.sin(1.1 * Date.now() / 1000);
+  radius = radius * (1 + rnd);
+  var radialGradient =
+    createRadialGradient([x, y, 0, x , y , radius ], [
+      0.0, '#992',
+      0.15 + rnd, '#888',
+      0.45 + rnd, '#330',
+      0.55, '#110',
+      1, '#000'
+    ]);
+  ctx.fillStyle = radialGradient;
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, 2 * 3.14);
+  ctx.fill();
+  ctx.restore();
+}
+
+createRadialGradient = (circleCoords, stops) => {
+    var gd = ctx.createRadialGradient.apply(ctx, circleCoords);
+    for (var i = 0; i < stops.length; i += 2) {
+        gd.addColorStop(stops[i], stops[i + 1]);
+    }
+    return gd;
+}
+
 
 landscape = new Landscape();
 landscape.generateHill('rgba(193, 225, 242, .4)', 'rgba(212, 238, 252, 1)', 75, 3);
